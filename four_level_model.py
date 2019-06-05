@@ -2,7 +2,7 @@ import numpy as np
 from scipy.special import erf, erfc
 
 
-def trace(t, Amp, t1, t2, c, mu, sigma):
+def trace_differential(t, Amp, t1, t2, c, mu, sigma):
     """Bleach trace, derived from an analytical Solution of the four level system.
 
     Function is derived by analytically solving the 4 level system and
@@ -10,15 +10,33 @@ def trace(t, Amp, t1, t2, c, mu, sigma):
     Initial state is N0=1, N1=0, N2=0 and N3=0.
 
     Note:
+        This function assumes that the bleach is calculated as a ratio. Thus
+        this function starts at 1 and can go down to 0.
+
         This implementation has a problem when t1=t2. Due to numerical constrains
         this must be avoided, as it divides by 0.
+
+    Example:
+        >>> t = np.linspace(-0.1, 10, 20)
+        >>> Amp = 0.1
+        >>> t1 = 0.5
+        >>> t2 = 0.7
+        >>> c = 0
+        >>> mu = 0
+        >>> sigma = 0.2
+        >>> print(trace_differential(t, Amp, t1, t2, c, mu, sigma))
+        [0.90898887 0.80139759 0.84839426 0.84377393 0.83119449 0.8217651
+         0.81614237 0.81309462 0.81152441 0.81073976 0.81035531 0.81016943
+         0.81008038 0.81003799 0.81001791 0.81000842 0.81000396 0.81000186
+         0.81000087 0.81000041]
+
 
     Args:
         t: Array of Time values. Defines units of ``t1`` and ``t2``.
         Amp: Amplitude of the excitation pulse. Determines the fraction
             of oscillators excited by the excitation pulse into N1 state.
         t1: Lifetime of the first excited vibrational state in units of
-              ``t``
+            ``t``
         t2: Lifetime of the second excited vibrational state in units of
             ``t``.
         c: Scaling factor of final (heated) state. Used to account for
@@ -27,12 +45,10 @@ def trace(t, Amp, t1, t2, c, mu, sigma):
         sigma: Temporal width of pump pulse in units of ``t``.
 
     Returns:
-        Modeled result as deduced from the 4 level system for the given array of
-        ``t`` time values.
+        Value of the trace at ``t``.
 
     """
     pi=np.pi;
-    #a0 = erf((((2.**-0.5)*mu)/sigma)-(((2.**-0.5)*t)/sigma))
     def mysqrt(x): return np.sqrt(x)
     aux0=sigma*((t1**2)*(1.-(erf(((((2.**-0.5)*mu)/sigma)-(((2.**-0.5)*t)/\
     sigma))))));
