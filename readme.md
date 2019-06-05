@@ -4,8 +4,9 @@ A bleach trace is a solution to the differential equation describing the dynamic
 of a pump probe experiment. 
 
 ## Four Level Model
+This is described in **link paper here**.
 
-[[4_level_system.svg]]
+![4 Level System](./4_level_system.svg)
 
 ### Contains
 
