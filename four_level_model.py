@@ -2,19 +2,19 @@ import numpy as np
 from scipy.special import erf, erfc
 
 
-def trace_differential(t, Amp, t1, t2, c, mu, sigma):
-    """Bleach trace, derived from an analytical Solution of the four level system.
+def trace_ratio(t, Amp, t1, t2, c, mu, sigma):
+    """Bleach trace, derived from an analytical solution of the four level system.
 
     Function is derived by analytically solving the 4 level system and
-    subsequent convolution with a gaussian excitation function of the model.
+    subsequent convolution with a Gaussian excitation function of the model.
     Initial state is N0=1, N1=0, N2=0 and N3=0.
 
-    Note:
-        This function assumes that the bleach is calculated as a ratio. Thus
-        this function starts at 1 and can go down to 0.
+    Notes:
+        - Assumes that the bleach is calculated as a ratio. Thus
+          this function starts at 1 and can go down to 0.
 
-        This implementation has a problem when t1=t2. Due to numerical constrains
-        this must be avoided, as it divides by 0.
+        - Problem when t1=t2. Due to numerical constrains, this must be avoided,
+          as it divides by 0.
 
     Example:
         >>> t = np.linspace(-0.1, 10, 20)
@@ -24,7 +24,7 @@ def trace_differential(t, Amp, t1, t2, c, mu, sigma):
         >>> c = 0
         >>> mu = 0
         >>> sigma = 0.2
-        >>> print(trace_differential(t, Amp, t1, t2, c, mu, sigma))
+        >>> print(trace_ratio(t, Amp, t1, t2, c, mu, sigma))
         [0.90898887 0.80139759 0.84839426 0.84377393 0.83119449 0.8217651
          0.81614237 0.81309462 0.81152441 0.81073976 0.81035531 0.81016943
          0.81008038 0.81003799 0.81001791 0.81000842 0.81000396 0.81000186
@@ -41,7 +41,7 @@ def trace_differential(t, Amp, t1, t2, c, mu, sigma):
             ``t``.
         c: Scaling factor of final (heated) state. Used to account for
             spectral differences induced by residual heat.
-        mu: Tempoaral position of pump pulse in units of ``t``.
+        mu: Temporal position of pump pulse in units of ``t``.
         sigma: Temporal width of pump pulse in units of ``t``.
 
     Returns:
@@ -269,3 +269,17 @@ def trace_differential(t, Amp, t1, t2, c, mu, sigma):
        ))*(sigma*aux109))));
     output=aux110/sigma;
     return output
+
+
+def trace_difference(t, Amp, t1, t2, c, mu, sigma):
+    """See ´four_level_model.trace_ratio´ for documentation.
+
+    Traces based on the four level model can also be measured based on the
+    difference of pumped and unpumped spectra. Note that due to the
+    associativity of the convolution under scalar multiplication, the only
+    difference between the two is a constant offset of -N0. Given the initial
+    state is N0, N1=0, N2=0 and N3=0. By setting N0=1, one obtains the
+    following function for the trace based on differential bleach.
+
+    """
+    return trace_ratio(t, Amp, t1, t2, c, mu, sigma) - 1
